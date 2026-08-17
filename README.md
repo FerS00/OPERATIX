@@ -4,8 +4,9 @@ OPERATIX es un MVP que convierte pedidos escritos en transacciones estructuradas
 primer incremento reconoce una venta mediante tool calling, la guarda en Excel o Google
 Sheets y actualiza un dashboard local.
 
-> Estado: **MVP Paso 1 funcional**. El flujo local y la escritura en Excel están cubiertos
-> por pruebas. Las llamadas a proveedores cloud requieren una clave con cuota disponible.
+> Estado: **MVP Paso 1 funcional + Fase 1 de plataforma iniciada**. El flujo local y la
+> escritura en Excel están cubiertos por pruebas; la API FastAPI y la base MySQL están en
+> construcción. Las llamadas a proveedores cloud requieren una clave con cuota disponible.
 
 ## Arquitectura resumida
 
@@ -95,6 +96,33 @@ Por defecto se crea `data/operatix.xlsx`. En el ejemplo, `$2500` se interpreta c
 total porque no se indicó “cada una”; se guardan precio unitario `500.00` y total
 `2500.00`.
 
+## Base API y MySQL local
+
+La Fase 1 añade una base ejecutable para la futura plataforma. El dominio de ventas aún
+no se ha migrado: el flujo Dash/CLI continúa usando Excel o Google Sheets mientras se
+incorporan los servicios de forma incremental.
+
+Para ejecutar la API sin Docker:
+
+```powershell
+uv run uvicorn backend.app.main:app --reload
+```
+
+Prueba `http://127.0.0.1:8000/api/v1/health`. El endpoint `/api/v1/health/ready` requiere
+que MySQL esté disponible.
+
+Para levantar MySQL y la API con Docker Compose, copia `.env.example` a `.env.local`,
+cambia las contraseñas locales y ejecuta:
+
+```powershell
+docker compose --env-file .env.local up --build
+uv run alembic upgrade head
+```
+
+MySQL Community y el contenedor local no requieren un servicio administrado. El consumo
+de los proveedores LLM, el hosting y un MySQL administrado sí pueden generar costos y no
+se incorporarán sin informarlo.
+
 ## Google Sheets
 
 1. Crea una cuenta de servicio en Google Cloud y habilita Google Sheets API.
@@ -139,7 +167,7 @@ escritura del archivo.
 ```powershell
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest
+uv run python -m pytest
 ```
 
 Consulta [la arquitectura](docs/ARCHITECTURE.md) y
@@ -153,4 +181,5 @@ Consulta [la arquitectura](docs/ARCHITECTURE.md) y
 - No existe todavía aprobación humana para montos altos.
 - Excel y Google Sheets no son adecuados para alta concurrencia.
 - No hay webhook público, autenticación de usuarios finales ni despliegue productivo.
-- No se añadirá una base de datos o cola hasta que las métricas reales lo justifiquen.
+- No se añadirá una cola o un servicio administrado hasta que las métricas reales lo
+  justifiquen.

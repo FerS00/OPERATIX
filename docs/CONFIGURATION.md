@@ -42,6 +42,26 @@ del proveedor al navegador de clientes.
 Los libros generados bajo `data/` están ignorados por Git porque pueden contener datos
 de clientes.
 
+## Backend y MySQL
+
+La API usa SQLAlchemy con el dialecto `mysql+pymysql`. En desarrollo local se puede usar
+MySQL Community mediante `docker-compose.yml` sin contratar una base administrada.
+
+| Variable | Valor predeterminado | Uso |
+|---|---|---|
+| `APP_NAME` | `OPERATIX API` | Nombre visible de la API |
+| `APP_ENV` | `development` | Entorno de ejecución |
+| `MYSQL_HOST` | `127.0.0.1` | Host de MySQL fuera de Docker |
+| `MYSQL_PORT` | `3306` | Puerto de MySQL |
+| `MYSQL_DATABASE` | `operatix` | Base de datos |
+| `MYSQL_USER` | `operatix` | Usuario de aplicación |
+| `MYSQL_PASSWORD` | — | Contraseña local, nunca se commitea |
+| `MYSQL_ROOT_PASSWORD` | — | Contraseña local de Docker, nunca se commitea |
+| `DATABASE_URL` | — | URL opcional que reemplaza las variables `MYSQL_*` |
+
+`DATABASE_URL` y las contraseñas no deben aparecer en logs, capturas ni commits. Las
+migraciones se ejecutan con `uv run alembic upgrade head` después de levantar MySQL.
+
 ## Persistencia Google Sheets
 
 | Variable | Uso |

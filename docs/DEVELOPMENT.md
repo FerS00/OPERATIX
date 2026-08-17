@@ -16,7 +16,8 @@ cambios antes de publicarlos.
 uv run operatix-web
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest
+uv run python -m pytest
+uv run uvicorn backend.app.main:app --reload
 ```
 
 Para probar el CLI:
@@ -24,6 +25,18 @@ Para probar el CLI:
 ```powershell
 uv run operatix "Agrega una venta de 2 monitores a $300 cada uno para Ana Torres"
 ```
+
+### MySQL local y migraciones
+
+Configura `.env.local` a partir de `.env.example` y ejecuta:
+
+```powershell
+docker compose --env-file .env.local up --build
+uv run alembic upgrade head
+```
+
+La primera migración solo establece el historial. Las tablas de negocio se añadirán junto
+con los modelos de la siguiente fase.
 
 ## Flujo de una solicitud
 

@@ -20,6 +20,13 @@ service-account*.json
 data/*.xlsx
 data/*.xls
 reports/*.html
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/exports/*
+!storage/exports/.gitkeep
+
+# Local database and container state
+*.sql
 
 # Editors and operating systems
 .idea/

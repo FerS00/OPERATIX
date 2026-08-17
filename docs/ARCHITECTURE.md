@@ -27,8 +27,16 @@ flowchart LR
 - **Tool calling con efecto controlado:** el modelo propone argumentos validados; solo la
   herramienta escribe. El ID lo genera la aplicación, no el modelo.
 - **Multiproveedor:** las credenciales y nombres de modelo se resuelven en el borde.
-- **Excel primero:** reduce configuración y permite validar el flujo completo antes de
-  depender de OAuth, cuotas y permisos de Google.
+- **Migración incremental a MySQL:** Excel y Google Sheets siguen disponibles durante la
+  transición, pero MySQL será la base transaccional del producto final. Excel quedará para
+  importación, exportación y procesamiento de archivos.
+
+## Fase 1 de plataforma
+
+La rama `feat/operatix-mvp-main` incorpora una base FastAPI, SQLAlchemy y Alembic sin
+acoplar todavía el dominio de ventas a la base de datos. Docker Compose levanta MySQL
+Community local y la API expone `/api/v1/health` y `/api/v1/health/ready`. Las tablas de
+negocio se añadirán en la fase de dominio, con migraciones versionadas.
 
 ## Estructura
 
@@ -52,6 +60,6 @@ OPERATIX/
 
 1. Confirmación humana antes de operaciones sensibles o montos altos.
 2. Webhook autenticado para WhatsApp, Telegram, Slack o Teams; elegir solo un canal.
-3. Trazas y evaluaciones con LangSmith, incluyendo casos ambiguos y duplicados.
-4. Dashboard con filtros de fecha, producto, cliente y moneda.
-5. Solo cuando las hojas sean insuficientes: migración del adaptador a Postgres.
+3. Autenticación, permisos y auditoría antes de exponer tools transaccionales.
+4. Migración del dominio de ventas a MySQL y herramientas idempotentes.
+5. Dashboard React, reportes y Telegram después de estabilizar la API.

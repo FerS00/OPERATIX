@@ -6,7 +6,7 @@
 ## Estado actual
 
 - Fecha de referencia: 2026-08-16.
-- Fase activa: Fase 1 — fundación FastAPI/MySQL (pendiente de iniciar).
+- Fase activa: Fase 2 — seguridad (pendiente de iniciar).
 - Rama de trabajo: `feat/operatix-mvp-main`, basada en `main`.
 - Rama remota original preservada: `feat/operatix-mvp`.
 - Respaldo local: `backup/operatix-mvp-root-0f6aece`.
@@ -52,6 +52,10 @@ seguir siendo la base transaccional principal del producto final.
 - Rama de trabajo nueva creada desde `main`.
 - MVP original trasladado al working tree de la rama nueva.
 - `PROJECT_CONTEXT.md` añadido para continuidad entre agentes.
+- Fase 1 implementada: FastAPI, configuración MySQL, SQLAlchemy, Alembic, Docker Compose,
+  estructura inicial de frontend/storage y endpoint de salud.
+- Dependencias de la Fase 1 bloqueadas en `uv.lock`.
+- Verificaciones de Fase 1: 9 pruebas, Ruff, formato, Compose y Alembic offline.
 
 ## Trabajo pendiente
 
@@ -61,12 +65,14 @@ seguir siendo la base transaccional principal del producto final.
 - Verificar historial, pruebas y estado limpio.
 - No hacer push sin autorización explícita; la rama reconstruida aún no se ha publicado.
 
-### Fase 1 — Fundación
+### Fase 1 — Fundación (completada localmente)
 
-- Crear `backend/`, `frontend/` y `storage/` de forma incremental.
-- Añadir FastAPI, configuración por entorno y endpoint de salud.
-- Añadir MySQL local con Docker Compose.
-- Añadir SQLAlchemy y migraciones Alembic.
+- Base FastAPI en `backend/app` con `/api/v1/health` y `/api/v1/health/ready`.
+- Configuración por entorno con URL MySQL opcional y credenciales fuera del código.
+- SQLAlchemy y Alembic configurados para `mysql+pymysql`.
+- Dockerfile y Compose con MySQL Community 8.4 local.
+- Estructuras `frontend/` y `storage/` creadas sin instalar herramientas frontend todavía.
+- No se levantó ningún contenedor ni servicio administrado; costo de esta fase: cero.
 
 ### Fase 2 — Seguridad
 
