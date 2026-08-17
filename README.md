@@ -4,7 +4,8 @@ OPERATIX es un MVP que convierte pedidos escritos en transacciones estructuradas
 primer incremento reconoce una venta mediante tool calling, la guarda en Excel o Google
 Sheets y actualiza un dashboard local.
 
-> Estado: **Fases 1–4 de plataforma implementadas localmente**. El flujo Dash/CLI legado
+> Estado: **Fase 5 iniciada localmente**. La base de las Fases 1–4 y el dashboard React
+> están implementados; el flujo Dash/CLI legado
 > sigue disponible, y la API FastAPI ya tiene seguridad y dominio inicial en MySQL. Las
 > llamadas a proveedores cloud requieren una clave con cuota disponible.
 
@@ -43,6 +44,8 @@ adaptador seleccionado.
 ## Estructura del repositorio
 
 ```text
+backend/app/           API FastAPI, seguridad, dominio y canales
+frontend/              Dashboard React + TypeScript + Tailwind + Recharts
 src/operatix/
 ├── application/       Casos de uso, agente y selección de repositorios
 ├── domain/            Modelos y reglas de ventas
@@ -85,6 +88,20 @@ local de un solo usuario.
 
 Los nombres de modelo son configurables porque la disponibilidad depende de cada cuenta
 y cambia con el tiempo.
+
+### Dashboard React
+
+El dashboard de la API se ejecuta aparte y no requiere hosting:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Abre `http://localhost:5173`. Por defecto usa `http://127.0.0.1:8000/api/v1`; para otra
+URL crea `frontend/.env.local` con `VITE_API_URL=...`. El JWT de sesión se conserva
+temporalmente en `sessionStorage` y las descargas de archivos usan el header `Authorization`.
 
 ### Paso 1 desde la terminal
 
@@ -136,6 +153,7 @@ POST /api/v1/auth/login
 GET  /api/v1/auth/me
 GET  /api/v1/security/read-check
 GET  /api/v1/security/admin-check
+GET  /api/v1/security/audit           (ADMIN)
 ```
 
 Configura `JWT_SECRET` con al menos 32 caracteres aleatorios antes de usar login. Las
@@ -188,6 +206,14 @@ Los totales del reporte siempre se agrupan por código de moneda; nunca se suman
 PEN u otras monedas entre sí. El libro exportado no contiene fórmulas y neutraliza
 valores de texto que puedan interpretarse como fórmulas por Excel.
 
+## Telegram local
+
+`backend.app.channels.telegram.TelegramChannel` implementa un adaptador independiente
+para Bot API y long polling. No interpreta órdenes ni accede a MySQL; entrega mensajes
+normalizados al caso de uso que se conectará en la siguiente iteración. Configura
+`TELEGRAM_BOT_TOKEN` solo si quieres probarlo. El polling local no requiere webhook ni
+hosting, aunque Telegram exige crear un bot y conservar su token fuera del repositorio.
+
 ## Google Sheets
 
 1. Crea una cuenta de servicio en Google Cloud y habilita Google Sheets API.
@@ -234,6 +260,7 @@ uv run ruff check .
 uv run ruff format --check .
 uv run python -m pytest
 semgrep scan --config p/python --config p/security-audit backend src tests
+cd frontend; npm run build
 ```
 
 Consulta [la arquitectura](docs/ARCHITECTURE.md) y

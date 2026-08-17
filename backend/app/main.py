@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.api.routes.auth import router as auth_router
 from backend.app.api.routes.business import router as business_router
@@ -17,6 +18,13 @@ def create_app() -> FastAPI:
     """Build the API application without performing network or database I/O."""
     settings = get_settings()
     application = FastAPI(title=settings.app_name, version="0.1.0")
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=list(settings.frontend_origins),
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "Idempotency-Key"],
+    )
     application.include_router(health_router)
     application.include_router(auth_router)
     application.include_router(business_router)

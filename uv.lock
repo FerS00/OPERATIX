@@ -1201,6 +1201,7 @@ dependencies = [
     { name = "email-validator" },
     { name = "fastapi" },
     { name = "gspread" },
+    { name = "httpx" },
     { name = "langchain" },
     { name = "langchain-anthropic" },
     { name = "langchain-google-genai" },
@@ -1220,7 +1221,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "httpx" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
@@ -1233,6 +1233,7 @@ requires-dist = [
     { name = "email-validator", specifier = ">=2.2,<3" },
     { name = "fastapi", specifier = ">=0.115,<1" },
     { name = "gspread", specifier = ">=6.2,<7" },
+    { name = "httpx", specifier = ">=0.27,<1" },
     { name = "langchain", specifier = ">=1.0,<2" },
     { name = "langchain-anthropic", specifier = ">=1.0,<2" },
     { name = "langchain-google-genai", specifier = ">=3.0,<5" },
@@ -1252,7 +1253,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "httpx", specifier = ">=0.27,<1" },
     { name = "pytest", specifier = ">=8.3,<10" },
     { name = "pytest-cov", specifier = ">=6,<8" },
     { name = "ruff", specifier = ">=0.12,<1" },

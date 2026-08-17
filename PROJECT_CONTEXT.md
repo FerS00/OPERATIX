@@ -6,7 +6,8 @@
 ## Estado actual
 
 - Fecha de referencia: 2026-08-16.
-- Fase activa: Fase 5 — frontend React y Telegram (Fase 4 completada localmente).
+- Fase activa: Fase 5 — frontend React y Telegram (base implementada; integración de
+  comandos todavía pendiente).
 - Rama de trabajo: `feat/operatix-mvp-main`, basada en `main`.
 - Rama remota original preservada: `feat/operatix-mvp`.
 - Respaldo local: `backup/operatix-mvp-root-0f6aece`.
@@ -75,6 +76,12 @@ seguir siendo la base transaccional principal del producto final.
 - `python-multipart` quedó fijado en `uv.lock`; no se añadió ningún servicio de pago.
 - Verificaciones de Fase 4: 17 pruebas, Ruff y formato; cubren almacenamiento, preview,
   descarga y exportación separada por moneda.
+- Fase 5 base implementada: SPA React + TypeScript + Tailwind + Recharts con login/registro,
+  KPIs, ventas, inventario, archivos, reportes y auditoría visible para ADMIN.
+- CORS configurable mediante `OPERATIX_FRONTEND_ORIGINS`; las descargas usan JWT en header,
+  no tokens en URLs. `npm run build` compila correctamente.
+- `TelegramChannel` implementa Bot API y long polling local sin dependencia de terceros ni
+  acceso directo al dominio; requiere `TELEGRAM_BOT_TOKEN` opcional.
 
 ## Trabajo pendiente
 
@@ -120,10 +127,12 @@ seguir siendo la base transaccional principal del producto final.
 
 ### Fase 5 — Frontend y Telegram
 
-- Dashboard React con ventas, clientes, productos, inventario, archivos, reportes y
-  auditoría.
-- Abstracción de canales y `TelegramChannel`.
-- Usar polling local para evitar pagar hosting mientras se valida el MVP.
+- [completado] Dashboard React con ventas, inventario, archivos, reportes y auditoría ADMIN.
+- [completado] Abstracción de canal y `TelegramChannel` con polling local.
+- [pendiente] Integrar comandos Telegram con `AIOrchestrator`, confirmación humana y
+  rate limits por chat.
+- [pendiente] Añadir vistas de clientes/productos y pruebas de navegador.
+- [decisión] Mantener polling local para evitar hosting mientras se valida el MVP.
 
 ### Fase 6 — Calidad y entrega
 
@@ -150,6 +159,7 @@ uv run ruff check .
 uv run ruff format --check .
 uv run python -m pytest
 semgrep scan --config p/python --config p/security-audit backend src tests
+Push-Location frontend; npm run build; Pop-Location
 git status --short --branch
 git log --oneline --decorate --graph --all
 ```

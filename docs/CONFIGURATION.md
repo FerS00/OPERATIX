@@ -77,6 +77,19 @@ MySQL Community mediante `docker-compose.yml` sin contratar una base administrad
 `DATABASE_URL` y las contraseñas no deben aparecer en logs, capturas ni commits. Las
 migraciones se ejecutan con `uv run alembic upgrade head` después de levantar MySQL.
 
+## Dashboard y Telegram
+
+| Variable | Valor predeterminado | Uso |
+|---|---|---|
+| `OPERATIX_FRONTEND_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Orígenes CORS permitidos |
+| `TELEGRAM_BOT_TOKEN` | — | Token opcional del bot; vacío deshabilita el adaptador |
+| `TELEGRAM_POLL_INTERVAL_SECONDS` | `5` | Espera entre reintentos del polling local |
+
+El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000/api/v1`) y nunca
+recibe secretos de proveedores LLM. Telegram usa long polling local; no se añadió un
+webhook público ni hosting. El Bot API no exige pago por mensaje, pero el token debe
+tratarse como secreto y cualquier hosting futuro tendría costo potencial.
+
 ## Autenticación
 
 | Variable | Valor predeterminado | Uso |

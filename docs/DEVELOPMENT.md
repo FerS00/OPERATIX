@@ -20,6 +20,17 @@ uv run python -m pytest
 uv run uvicorn backend.app.main:app --reload
 ```
 
+En otra terminal, para ejecutar el dashboard:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+El build de entrega se valida con `npm run build`. No se versionan `node_modules/`,
+`dist/` ni `frontend/.env.local`.
+
 Para probar el CLI:
 
 ```powershell
@@ -54,6 +65,12 @@ y `audit_logs`.
 
 Para probar sin datos reales se usa `OPERATIX_STORAGE_ROOT` apuntando a una carpeta
 temporal. Nunca coloques libros de clientes o reportes generados bajo control de versiones.
+
+### Canales
+
+`backend.app.channels.telegram.TelegramChannel` es un adaptador de transporte sin
+dependencias externas. Se prueba con dobles offline y solo debe conectarse a un caso de
+uso autorizado; no debe interpretar lenguaje natural ni ejecutar SQL directamente.
 
 ### Pruebas de autenticación
 

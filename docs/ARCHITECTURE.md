@@ -31,6 +31,17 @@ flowchart LR
     REPORT --> FS
 ```
 
+La Fase 5 añade un cliente web y deja Telegram detrás de un puerto de canal:
+
+```mermaid
+flowchart LR
+    WEB[React + TypeScript + Tailwind + Recharts] --> API[FastAPI + JWT]
+    TG[Telegram long polling] --> CHANNEL[TelegramChannel]
+    CHANNEL --> USECASE[Casos de uso autorizados]
+    API --> USECASE
+    USECASE --> DB[(MySQL)]
+```
+
 ## Decisiones
 
 - **Monolito modular:** una aplicación y un proceso para el MVP.
@@ -84,10 +95,23 @@ Los reportes agregan por moneda y exportan un libro de dos hojas sin fórmulas. 
 que empiezan por `=`, `+`, `-` o `@` se neutralizan antes de entrar al libro para evitar
 inyección de fórmulas.
 
+## Fase 5 de frontend y canales
+
+El dashboard es una SPA local compilada con Vite. Consume exclusivamente endpoints
+autenticados de FastAPI, muestra KPIs calculados por moneda, ventas, inventario, archivos,
+reportes y auditoría para administradores. Las descargas usan `Authorization` en una
+petición `fetch`, no tokens en la URL. CORS se configura mediante
+`OPERATIX_FRONTEND_ORIGINS`.
+
+`TelegramChannel` solo normaliza mensajes y envía texto mediante la Bot API. La conexión
+con herramientas, confirmación humana e idempotencia se mantiene fuera del transporte.
+
 ## Estructura
 
 ```text
 OPERATIX/
+├── backend/app/          # API FastAPI, seguridad, dominio y canales
+├── frontend/              # SPA React, TypeScript, Tailwind y Recharts
 ├── src/operatix/
 │   ├── application/       # Casos de uso, agente y selección de repositorio
 │   ├── domain/            # Reglas y modelos transaccionales
