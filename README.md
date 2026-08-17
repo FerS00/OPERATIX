@@ -4,7 +4,7 @@ OPERATIX es un MVP que convierte pedidos escritos en transacciones estructuradas
 primer incremento reconoce una venta mediante tool calling, la guarda en Excel o Google
 Sheets y actualiza un dashboard local.
 
-> Estado: **Fases 1–3 de plataforma implementadas localmente**. El flujo Dash/CLI legado
+> Estado: **Fases 1–4 de plataforma implementadas localmente**. El flujo Dash/CLI legado
 > sigue disponible, y la API FastAPI ya tiene seguridad y dominio inicial en MySQL. Las
 > llamadas a proveedores cloud requieren una clave con cuota disponible.
 
@@ -165,6 +165,29 @@ GET  /api/v1/sales/summary      (REPORTS)
 Repetir la misma clave con los mismos datos devuelve la venta existente; reutilizarla
 con datos distintos devuelve conflicto y no duplica la transacción.
 
+## Archivos Excel y reportes
+
+La Fase 4 mantiene los binarios fuera de MySQL y guarda en la tabla `files` únicamente
+metadatos, hash SHA-256, usuario y ruta relativa opaca. Los archivos se almacenan bajo
+`storage/uploads` o `storage/exports`, con límite configurable y nombres internos
+generados por el servidor. Se aceptan `.xlsx`, `.csv` y `.tsv`; la vista previa es de
+solo lectura, acotada a 5.000 filas y rechaza fórmulas en los datos de entrada.
+
+Endpoints protegidos:
+
+```text
+POST /api/v1/files/upload                (CREATE, multipart/form-data)
+GET  /api/v1/files                       (READ)
+POST /api/v1/files/{id}/excel/preview    (READ)
+GET  /api/v1/files/{id}/download         (READ)
+GET  /api/v1/reports/sales/summary       (REPORTS)
+POST /api/v1/reports/sales/export        (EXPORT)
+```
+
+Los totales del reporte siempre se agrupan por código de moneda; nunca se suman USD,
+PEN u otras monedas entre sí. El libro exportado no contiene fórmulas y neutraliza
+valores de texto que puedan interpretarse como fórmulas por Excel.
+
 ## Google Sheets
 
 1. Crea una cuenta de servicio en Google Cloud y habilita Google Sheets API.
@@ -210,6 +233,7 @@ escritura del archivo.
 uv run ruff check .
 uv run ruff format --check .
 uv run python -m pytest
+semgrep scan --config p/python --config p/security-audit backend src tests
 ```
 
 Consulta [la arquitectura](docs/ARCHITECTURE.md) y

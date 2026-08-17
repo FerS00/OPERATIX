@@ -6,7 +6,9 @@ from fastapi import FastAPI
 
 from backend.app.api.routes.auth import router as auth_router
 from backend.app.api.routes.business import router as business_router
+from backend.app.api.routes.files import router as files_router
 from backend.app.api.routes.health import router as health_router
+from backend.app.api.routes.reports import router as reports_router
 from backend.app.api.routes.security import router as security_router
 from backend.app.core.config import get_settings
 
@@ -18,6 +20,8 @@ def create_app() -> FastAPI:
     application.include_router(health_router)
     application.include_router(auth_router)
     application.include_router(business_router)
+    application.include_router(files_router)
+    application.include_router(reports_router)
     application.include_router(security_router)
     return application
 

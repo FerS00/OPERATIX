@@ -17,6 +17,20 @@ flowchart LR
     D --> UI
 ```
 
+El backend FastAPI actual añade el flujo transaccional siguiente:
+
+```mermaid
+flowchart LR
+    C[Cliente autenticado] --> API[FastAPI]
+    API --> AUTH[JWT + permisos]
+    API --> TOOLS[ToolRegistry]
+    TOOLS --> DB[(MySQL: negocio, seguridad, metadata files)]
+    API --> FS[(Filesystem: uploads / exports)]
+    FS --> PREVIEW[Preview Excel acotada]
+    DB --> REPORT[Reporte por moneda]
+    REPORT --> FS
+```
+
 ## Decisiones
 
 - **Monolito modular:** una aplicación y un proceso para el MVP.
@@ -58,6 +72,18 @@ permiso requerido y limita cada instancia a una llamada. En esta fase las tools 
 estructuradas y deterministas; el adaptador LLM que interprete lenguaje natural se
 conectará después, sin darle acceso directo a SQLAlchemy.
 
+## Fase 4 de archivos y reportes
+
+Los archivos no se almacenan como blobs en MySQL. `FileStorage` valida extensión, limita
+el tamaño, escribe de forma atómica y resuelve exclusivamente rutas relativas bajo la
+raíz configurada. `FileRecord` permite auditoría y descarga autenticada. La vista previa
+Excel solo inspecciona encabezados y filas acotadas; todavía no ejecuta importaciones de
+ventas, por lo que no puede modificar inventario de forma accidental.
+
+Los reportes agregan por moneda y exportan un libro de dos hojas sin fórmulas. Las cadenas
+que empiezan por `=`, `+`, `-` o `@` se neutralizan antes de entrar al libro para evitar
+inyección de fórmulas.
+
 ## Estructura
 
 ```text
@@ -80,5 +106,5 @@ OPERATIX/
 
 1. Confirmación humana antes de operaciones sensibles o montos altos.
 2. Completar conversación multironda y conectar el adaptador LLM al orquestador.
-3. Procesamiento Excel, reportes y métricas con monedas separadas.
+3. Completar importación confirmada de filas Excel hacia clientes/productos/ventas.
 4. Dashboard React y Telegram después de estabilizar la API.

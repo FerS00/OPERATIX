@@ -35,12 +35,25 @@ docker compose --env-file .env.local up --build
 uv run alembic upgrade head
 ```
 
-La primera migración solo establece el historial; `0002_security` añade la seguridad y
-`0003_business` crea las tablas iniciales del dominio.
+La primera migración solo establece el historial; `0002_security` añade la seguridad,
+`0003_business` crea las tablas iniciales del dominio y `0004_files` registra metadata de
+archivos.
 
-Las migraciones actuales llegan hasta `0003_business`. La ruta de ventas exige el header
+Las migraciones actuales llegan hasta `0004_files`. La ruta de ventas exige el header
 `Idempotency-Key`; las pruebas de dominio usan SQLite temporal y no sustituyen una prueba
 de integración contra MySQL antes de desplegar.
+
+### Archivos y reportes
+
+`backend.app.services.storage.FileStorage` escribe los bytes fuera de la base mediante un
+archivo temporal y `os.replace`, calcula SHA-256 y asigna nombres UUID. `FileRecord` guarda
+solo metadata en MySQL. `backend.app.services.excel.preview_file` lee `.xlsx`, `.csv` y
+`.tsv` en modo acotado y sin mutar el dominio. `reports.export_sales_report` genera un
+libro sin fórmulas, con hojas `Resumen` y `Ventas`, y registra su exportación en `files`
+y `audit_logs`.
+
+Para probar sin datos reales se usa `OPERATIX_STORAGE_ROOT` apuntando a una carpeta
+temporal. Nunca coloques libros de clientes o reportes generados bajo control de versiones.
 
 ### Pruebas de autenticación
 

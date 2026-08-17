@@ -6,7 +6,7 @@
 ## Estado actual
 
 - Fecha de referencia: 2026-08-16.
-- Fase activa: Fase 4 — Excel y reportes (pendiente de iniciar).
+- Fase activa: Fase 5 — frontend React y Telegram (Fase 4 completada localmente).
 - Rama de trabajo: `feat/operatix-mvp-main`, basada en `main`.
 - Rama remota original preservada: `feat/operatix-mvp`.
 - Respaldo local: `backup/operatix-mvp-root-0f6aece`.
@@ -66,6 +66,15 @@ seguir siendo la base transaccional principal del producto final.
   guardan hash de comando y protegen reintentos con `Idempotency-Key`.
 - Verificaciones de Fase 3: 12 pruebas, Ruff, formato, Semgrep (0 hallazgos) y Alembic
   offline; cobertura total aproximada del 72%.
+- Fase 4 implementada: `FileStorage` guarda binarios fuera de MySQL con nombres UUID,
+  límites de tamaño, hash SHA-256 y escritura atómica; `FileRecord` persiste solo metadata.
+- La API acepta `.xlsx`, `.csv` y `.tsv`, ofrece vista previa de solo lectura (máximo 5.000
+  filas) y rechaza fórmulas de entrada. Los reportes agregan por moneda y exportan libros
+  `Resumen`/`Ventas` sin fórmulas, con auditoría.
+- Endpoints de archivos y reportes protegidos por `CREATE`, `READ`, `REPORTS` y `EXPORT`.
+- `python-multipart` quedó fijado en `uv.lock`; no se añadió ningún servicio de pago.
+- Verificaciones de Fase 4: 17 pruebas, Ruff y formato; cubren almacenamiento, preview,
+  descarga y exportación separada por moneda.
 
 ## Trabajo pendiente
 
@@ -103,9 +112,11 @@ seguir siendo la base transaccional principal del producto final.
 
 ### Fase 4 — Excel y reportes
 
-- Almacenar archivos fuera de MySQL y sus metadatos dentro de MySQL.
-- Importar, exportar, validar y analizar Excel con pandas/openpyxl/xlsxwriter.
-- Reportes con métricas separadas por moneda.
+- [completado] Almacenar archivos fuera de MySQL y sus metadatos dentro de MySQL.
+- [completado] Validar y previsualizar `.xlsx`, `.csv` y `.tsv` sin mutar el dominio.
+- [completado] Exportar reportes sin fórmulas, con métricas separadas por moneda.
+- [pendiente] Importación confirmada de filas hacia clientes/productos/ventas; se mantiene
+  separada para añadir confirmación humana e idempotencia por fila.
 
 ### Fase 5 — Frontend y Telegram
 
@@ -128,8 +139,9 @@ autenticación.
 
 Posibles costos: consumo de LLM cloud, hosting, MySQL administrado, almacenamiento de
 archivos, dominio, webhook público de Telegram, cuotas excedidas de CI y observabilidad
-administrada. No añadir esos servicios sin informar primero el costo y ofrecer una opción
-local o gratuita cuando sea viable.
+administrada. `python-multipart`, openpyxl y las herramientas locales de esta fase son
+software libre y no agregan costo de licencia. No añadir servicios administrados sin
+informar primero el costo y ofrecer una opción local o gratuita cuando sea viable.
 
 ## Verificación recomendada
 
@@ -137,7 +149,7 @@ local o gratuita cuando sea viable.
 uv run ruff check .
 uv run ruff format --check .
 uv run python -m pytest
-semgrep scan --config p/python --config p/security-audit src tests
+semgrep scan --config p/python --config p/security-audit backend src tests
 git status --short --branch
 git log --oneline --decorate --graph --all
 ```
@@ -147,4 +159,6 @@ git log --oneline --decorate --graph --all
 Leer primero este archivo, `AGENTS.md`, `README.md` y `docs/`. Confirmar la rama activa y
 el estado de Git antes de editar. Continuar por la primera tarea pendiente de la fase
 activa. Mantener MySQL como decisión vigente, evitar secretos y no hacer push, migraciones
-destructivas ni servicios con costo sin autorización explícita.
+destructivas ni servicios con costo sin autorización explícita. Antes de implementar la
+importación Excel completa, definir confirmación humana, resolución de clientes/productos
+y claves de idempotencia por fila.

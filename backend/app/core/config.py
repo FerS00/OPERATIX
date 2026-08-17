@@ -19,6 +19,8 @@ class Settings:
     database_url: str
     jwt_secret: str = ""
     jwt_access_token_minutes: int = 30
+    storage_root: str = "storage"
+    max_upload_bytes: int = 10 * 1024 * 1024
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -48,12 +50,22 @@ class Settings:
         if not 5 <= expiration_minutes <= 1_440:
             raise ValueError("JWT_ACCESS_TOKEN_EXPIRE_MINUTES debe estar entre 5 y 1440.")
 
+        raw_max_upload = os.getenv("OPERATIX_MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)).strip()
+        try:
+            max_upload_bytes = int(raw_max_upload)
+        except ValueError as error:
+            raise ValueError("OPERATIX_MAX_UPLOAD_BYTES debe ser un entero.") from error
+        if not 1_024 <= max_upload_bytes <= 100 * 1024 * 1024:
+            raise ValueError("OPERATIX_MAX_UPLOAD_BYTES debe estar entre 1024 y 104857600.")
+
         return cls(
             app_name=os.getenv("APP_NAME", "OPERATIX API").strip(),
             app_env=os.getenv("APP_ENV", "development").strip(),
             database_url=database_url,
             jwt_secret=os.getenv("JWT_SECRET", "").strip(),
             jwt_access_token_minutes=expiration_minutes,
+            storage_root=os.getenv("OPERATIX_STORAGE_ROOT", "storage").strip() or "storage",
+            max_upload_bytes=max_upload_bytes,
         )
 
 

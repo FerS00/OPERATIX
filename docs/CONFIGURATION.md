@@ -32,7 +32,7 @@ La clave temporal no constituye una solución multiusuario. Para desplegar OPERA
 debe usar un gestor de secretos y autenticación del usuario final; nunca enviar claves
 del proveedor al navegador de clientes.
 
-## Persistencia Excel
+## Persistencia Excel heredada
 
 | Variable | Valor predeterminado |
 |---|---|
@@ -41,6 +41,21 @@ del proveedor al navegador de clientes.
 
 Los libros generados bajo `data/` están ignorados por Git porque pueden contener datos
 de clientes.
+
+## Archivos y reportes del backend
+
+El backend usa MySQL para datos transaccionales y filesystem para el contenido binario.
+La tabla `files` conserva metadata, hash SHA-256, propósito, usuario y ruta relativa; no
+se guardan blobs Excel en MySQL.
+
+| Variable | Valor predeterminado | Uso |
+|---|---|---|
+| `OPERATIX_STORAGE_ROOT` | `storage` | Raíz de `uploads/` y `exports/` |
+| `OPERATIX_MAX_UPLOAD_BYTES` | `10485760` | Límite de cada archivo (10 MiB) |
+
+Los endpoints aceptan `.xlsx`, `.csv` y `.tsv`. El nombre del usuario se conserva solo
+como metadata; el nombre físico es un UUID generado por la aplicación. En producción,
+respalda la carpeta configurada junto con MySQL y define una política de retención.
 
 ## Backend y MySQL
 
