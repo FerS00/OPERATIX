@@ -1,0 +1,28 @@
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.playwright-cli/
+.coverage
+htmlcov/
+output/playwright/
+
+# Secrets and local configuration
+.env
+.env.local
+.secrets/
+credentials*.json
+service-account*.json
+
+# Transactional data and generated reports
+data/*.xlsx
+data/*.xls
+reports/*.html
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
