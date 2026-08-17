@@ -35,8 +35,12 @@ docker compose --env-file .env.local up --build
 uv run alembic upgrade head
 ```
 
-La primera migración solo establece el historial. Las tablas de negocio se añadirán junto
-con los modelos de la siguiente fase.
+La primera migración solo establece el historial; `0002_security` añade la seguridad y
+`0003_business` crea las tablas iniciales del dominio.
+
+Las migraciones actuales llegan hasta `0003_business`. La ruta de ventas exige el header
+`Idempotency-Key`; las pruebas de dominio usan SQLite temporal y no sustituyen una prueba
+de integración contra MySQL antes de desplegar.
 
 ### Pruebas de autenticación
 

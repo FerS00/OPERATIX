@@ -4,9 +4,9 @@ OPERATIX es un MVP que convierte pedidos escritos en transacciones estructuradas
 primer incremento reconoce una venta mediante tool calling, la guarda en Excel o Google
 Sheets y actualiza un dashboard local.
 
-> Estado: **MVP Paso 1 funcional + Fase 1 de plataforma iniciada**. El flujo local y la
-> escritura en Excel están cubiertos por pruebas; la API FastAPI y la base MySQL están en
-> construcción. Las llamadas a proveedores cloud requieren una clave con cuota disponible.
+> Estado: **Fases 1–3 de plataforma implementadas localmente**. El flujo Dash/CLI legado
+> sigue disponible, y la API FastAPI ya tiene seguridad y dominio inicial en MySQL. Las
+> llamadas a proveedores cloud requieren una clave con cuota disponible.
 
 ## Arquitectura resumida
 
@@ -98,9 +98,9 @@ total porque no se indicó “cada una”; se guardan precio unitario `500.00` y
 
 ## Base API y MySQL local
 
-La Fase 1 añade una base ejecutable para la futura plataforma. El dominio de ventas aún
-no se ha migrado: el flujo Dash/CLI continúa usando Excel o Google Sheets mientras se
-incorporan los servicios de forma incremental.
+Las Fases 1–3 añaden una base ejecutable para la futura plataforma. El flujo Dash/CLI
+legado continúa usando Excel o Google Sheets mientras se completa la migración de la UI,
+pero el backend ya puede gestionar clientes, productos, inventario y ventas en MySQL.
 
 Para ejecutar la API sin Docker:
 
@@ -140,6 +140,30 @@ GET  /api/v1/security/admin-check
 
 Configura `JWT_SECRET` con al menos 32 caracteres aleatorios antes de usar login. Las
 contraseñas, tokens y secretos nunca se escriben en `audit_logs`.
+
+## Dominio MySQL y tools controladas
+
+La API de negocio utiliza servicios separados de las rutas y una `AIOrchestrator` que
+solo ejecuta tools registradas. La tool `create_sale` exige `CREATE`, usa el precio
+autoritativo del producto, descuenta inventario dentro de la misma transacción y requiere
+un header `Idempotency-Key` de 8 a 255 caracteres.
+
+Endpoints iniciales:
+
+```text
+POST /api/v1/customers          (CREATE)
+GET  /api/v1/customers          (READ)
+POST /api/v1/products           (CREATE)
+GET  /api/v1/products           (READ)
+GET  /api/v1/inventory          (READ)
+PUT  /api/v1/inventory/{id}     (UPDATE)
+POST /api/v1/sales              (CREATE + Idempotency-Key)
+GET  /api/v1/sales              (READ)
+GET  /api/v1/sales/summary      (REPORTS)
+```
+
+Repetir la misma clave con los mismos datos devuelve la venta existente; reutilizarla
+con datos distintos devuelve conflicto y no duplica la transacción.
 
 ## Google Sheets
 

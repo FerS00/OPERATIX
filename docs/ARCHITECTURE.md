@@ -44,7 +44,19 @@ La API incorpora usuarios, roles, permisos, JWT de corta duración y auditoría.
 solo contiene el identificador del usuario; cada request vuelve a cargar el usuario y sus
 roles desde la base de datos. El endpoint de registro solo asigna `USER`, y las rutas
 protegidas usan dependencias de autorización reutilizables. Las operaciones de negocio y
-las confirmaciones destructivas se implementarán junto con las tools en la siguiente fase.
+las confirmaciones destructivas se completarán junto con las tools y los flujos de dominio.
+
+## Fase 3 de dominio y orquestador
+
+MySQL ahora contiene clientes, productos, inventario y ventas. El servicio de ventas usa
+el precio almacenado del producto, valida stock, descuenta inventario y registra una
+auditoría en una única transacción. Cada venta exige una clave de idempotencia y guarda un
+hash del comando para rechazar reintentos con datos diferentes.
+
+`AIOrchestrator` delega únicamente a tools registradas en `ToolRegistry`, comprueba el
+permiso requerido y limita cada instancia a una llamada. En esta fase las tools son
+estructuradas y deterministas; el adaptador LLM que interprete lenguaje natural se
+conectará después, sin darle acceso directo a SQLAlchemy.
 
 ## Estructura
 
@@ -67,7 +79,6 @@ OPERATIX/
 ## Siguientes incrementos
 
 1. Confirmación humana antes de operaciones sensibles o montos altos.
-2. Webhook autenticado para WhatsApp, Telegram, Slack o Teams; elegir solo un canal.
-3. Autenticación, permisos y auditoría antes de exponer tools transaccionales.
-4. Migración del dominio de ventas a MySQL y herramientas idempotentes.
-5. Dashboard React, reportes y Telegram después de estabilizar la API.
+2. Completar conversación multironda y conectar el adaptador LLM al orquestador.
+3. Procesamiento Excel, reportes y métricas con monedas separadas.
+4. Dashboard React y Telegram después de estabilizar la API.

@@ -6,7 +6,7 @@
 ## Estado actual
 
 - Fecha de referencia: 2026-08-16.
-- Fase activa: Fase 3 — dominio y orquestador (pendiente de iniciar).
+- Fase activa: Fase 4 — Excel y reportes (pendiente de iniciar).
 - Rama de trabajo: `feat/operatix-mvp-main`, basada en `main`.
 - Rama remota original preservada: `feat/operatix-mvp`.
 - Respaldo local: `backup/operatix-mvp-root-0f6aece`.
@@ -60,6 +60,12 @@ seguir siendo la base transaccional principal del producto final.
   auditoría.
 - El registro público solo asigna `USER`; las rutas de prueba RBAC cubren `READ` y `ADMIN`.
 - Verificaciones de Fase 2: 11 pruebas, Ruff y formato; cobertura total aproximada del 66%.
+- Fase 3 implementada: clientes, productos, inventario, ventas, servicios transaccionales y
+  `AIOrchestrator` con `ToolRegistry` explícita.
+- Las ventas usan el precio autoritativo del producto, bloquean/descuentan inventario,
+  guardan hash de comando y protegen reintentos con `Idempotency-Key`.
+- Verificaciones de Fase 3: 12 pruebas, Ruff, formato, Semgrep (0 hallazgos) y Alembic
+  offline; cobertura total aproximada del 72%.
 
 ## Trabajo pendiente
 
@@ -86,12 +92,14 @@ seguir siendo la base transaccional principal del producto final.
 - Migración `0002_security` preparada para MySQL.
 - No se añadieron servicios externos ni costos de infraestructura.
 
-### Fase 3 — Dominio y orquestador
+### Fase 3 — Dominio y orquestador (completada localmente)
 
-- Clientes, productos, inventario y ventas en MySQL.
-- Servicios y repositorios separados de las rutas HTTP.
-- Tools con permisos, límites por solicitud, confirmación e idempotencia.
-- Mantener soporte para conversación multironda.
+- Modelos y migración `0003_business` para clientes, productos, inventario y ventas.
+- Servicios transaccionales separados de las rutas HTTP.
+- `AIOrchestrator` y `ToolRegistry` con `create_sale`, `get_sales`, `get_inventory` y
+  `get_sales_summary`.
+- Permisos, límite de una tool por instancia, auditoría e idempotencia por hash.
+- La conexión de lenguaje natural/memoria multironda queda pendiente para una fase LLM.
 
 ### Fase 4 — Excel y reportes
 
