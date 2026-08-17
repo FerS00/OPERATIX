@@ -90,6 +90,13 @@ recibe secretos de proveedores LLM. Telegram usa long polling local; no se añad
 webhook público ni hosting. El Bot API no exige pago por mensaje, pero el token debe
 tratarse como secreto y cualquier hosting futuro tendría costo potencial.
 
+En Compose, la API recibe automáticamente `JWT_SECRET`, la raíz persistente de archivos,
+los orígenes CORS y las variables de Telegram. Cambiar `.env.local` requiere recrear el
+servicio (`docker compose up -d --build`). Para una prueba local se puede asignar un rol
+después del registro con `uv run python -m backend.app.management correo@ejemplo.local
+MANAGER`; el helper está pensado para una base de desarrollo y no sustituye un flujo de
+administración productivo.
+
 ## Autenticación
 
 | Variable | Valor predeterminado | Uso |

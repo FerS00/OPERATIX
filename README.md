@@ -4,10 +4,10 @@ OPERATIX es un MVP que convierte pedidos escritos en transacciones estructuradas
 primer incremento reconoce una venta mediante tool calling, la guarda en Excel o Google
 Sheets y actualiza un dashboard local.
 
-> Estado: **Fase 5 iniciada localmente**. La base de las Fases 1–4 y el dashboard React
-> están implementados; el flujo Dash/CLI legado
-> sigue disponible, y la API FastAPI ya tiene seguridad y dominio inicial en MySQL. Las
-> llamadas a proveedores cloud requieren una clave con cuota disponible.
+> Estado: **Fase 5 en validación local**. Las Fases 1–4, el dashboard React y el gateway
+> Telegram con confirmación/rate limit están implementados; el flujo Dash/CLI legado
+> sigue disponible y la API FastAPI usa MySQL. Las llamadas a proveedores cloud requieren
+> una clave con cuota disponible.
 
 ## Arquitectura resumida
 
@@ -140,6 +140,9 @@ MySQL Community y el contenedor local no requieren un servicio administrado. El 
 de los proveedores LLM, el hosting y un MySQL administrado sí pueden generar costos y no
 se incorporarán sin informarlo.
 
+La instalación, prueba funcional y desinstalación en una PC de prueba están descritas paso
+por paso en [docs/INSTALLATION.md](docs/INSTALLATION.md).
+
 ## Autenticación y permisos iniciales
 
 La Fase 2 incorpora usuarios, roles, permisos, hash Argon2, JWT y auditoría. El registro
@@ -209,10 +212,13 @@ valores de texto que puedan interpretarse como fórmulas por Excel.
 ## Telegram local
 
 `backend.app.channels.telegram.TelegramChannel` implementa un adaptador independiente
-para Bot API y long polling. No interpreta órdenes ni accede a MySQL; entrega mensajes
-normalizados al caso de uso que se conectará en la siguiente iteración. Configura
-`TELEGRAM_BOT_TOKEN` solo si quieres probarlo. El polling local no requiere webhook ni
-hosting, aunque Telegram exige crear un bot y conservar su token fuera del repositorio.
+para Bot API y long polling. `TelegramCommandGateway` interpreta únicamente comandos
+estructurados, exige `/confirmar` antes de ejecutar una venta, liga la confirmación al
+chat y limita solicitudes por ventana. `build_orchestrated_sale_executor` encamina la
+operación por `AIOrchestrator` y sus tools autorizadas; el worker que arranque polling de
+forma automática queda pendiente. Configura `TELEGRAM_BOT_TOKEN` solo si quieres probarlo.
+El polling local no requiere webhook ni hosting, aunque Telegram exige crear un bot y
+conservar su token fuera del repositorio.
 
 ## Google Sheets
 
@@ -263,16 +269,19 @@ semgrep scan --config p/python --config p/security-audit backend src tests
 cd frontend; npm run build
 ```
 
-Consulta [la arquitectura](docs/ARCHITECTURE.md) y
+Consulta [la arquitectura](docs/ARCHITECTURE.md),
 [la configuración y seguridad](docs/CONFIGURATION.md),
-[la guía de desarrollo](docs/DEVELOPMENT.md) y
-[las recomendaciones de herramientas](docs/TOOLING.md).
+[la guía de desarrollo](docs/DEVELOPMENT.md),
+[la guía de instalación/desinstalación](docs/INSTALLATION.md),
+[las recomendaciones de herramientas](docs/TOOLING.md) y
+[el contexto para agentes](PROJECT_CONTEXT.md).
 
 ## Límites conscientes del MVP
 
 - La interfaz de clave temporal es solo para ejecución local de un usuario.
 - No existe todavía aprobación humana para montos altos.
 - Excel y Google Sheets no son adecuados para alta concurrencia.
-- No hay webhook público, Telegram ni despliegue productivo.
+- No hay webhook público ni despliegue productivo; el worker automático de Telegram aún
+  no está incluido.
 - No se añadirá una cola o un servicio administrado hasta que las métricas reales lo
   justifiquen.

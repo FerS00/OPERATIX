@@ -6,8 +6,8 @@
 ## Estado actual
 
 - Fecha de referencia: 2026-08-16.
-- Fase activa: Fase 5 — frontend React y Telegram (base implementada; integración de
-  comandos todavía pendiente).
+- Fase activa: Fase 5 — frontend React y Telegram (integración local implementada;
+  pruebas de navegador y worker operativo pendientes).
 - Rama de trabajo: `feat/operatix-mvp-main`, basada en `main`.
 - Rama remota original preservada: `feat/operatix-mvp`.
 - Respaldo local: `backup/operatix-mvp-root-0f6aece`.
@@ -82,6 +82,13 @@ seguir siendo la base transaccional principal del producto final.
   no tokens en URLs. `npm run build` compila correctamente.
 - `TelegramChannel` implementa Bot API y long polling local sin dependencia de terceros ni
   acceso directo al dominio; requiere `TELEGRAM_BOT_TOKEN` opcional.
+- `TelegramCommandGateway` acepta comandos estructurados, exige confirmación explícita,
+  vincula el código al chat, aplica TTL y rate limit en memoria. El ejecutor conectado
+  a `AIOrchestrator` usa la tool autorizada `create_sale` e idempotencia.
+- El dashboard muestra clientes y productos; CORS es configurable y Compose persiste
+  `storage` y reenvía JWT, Telegram y límites de archivos al contenedor API.
+- `backend.app.management` permite asignar un rol a un usuario existente en una base
+  local de prueba; no es un flujo de administración productivo.
 
 ## Trabajo pendiente
 
@@ -129,9 +136,11 @@ seguir siendo la base transaccional principal del producto final.
 
 - [completado] Dashboard React con ventas, inventario, archivos, reportes y auditoría ADMIN.
 - [completado] Abstracción de canal y `TelegramChannel` con polling local.
-- [pendiente] Integrar comandos Telegram con `AIOrchestrator`, confirmación humana y
-  rate limits por chat.
-- [pendiente] Añadir vistas de clientes/productos y pruebas de navegador.
+- [completado] Integrar comandos Telegram con `AIOrchestrator`, confirmación humana y
+  rate limits por chat mediante `TelegramCommandGateway`.
+- [completado] Añadir vistas de clientes/productos en el dashboard.
+- [pendiente] Añadir un worker de polling con vinculación segura chat-usuario y pruebas
+  de navegador.
 - [decisión] Mantener polling local para evitar hosting mientras se valida el MVP.
 
 ### Fase 6 — Calidad y entrega
@@ -139,6 +148,8 @@ seguir siendo la base transaccional principal del producto final.
 - Tests unitarios, integración y flujos críticos.
 - Ruff, Semgrep y CI.
 - Documentación de arquitectura, configuración, costos y operación.
+- [completado] Guía paso a paso de instalación, prueba y desinstalación en
+  `docs/INSTALLATION.md`.
 
 ## Costos a vigilar
 

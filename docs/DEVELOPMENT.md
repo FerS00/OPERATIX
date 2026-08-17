@@ -31,6 +31,9 @@ npm run dev
 El build de entrega se valida con `npm run build`. No se versionan `node_modules/`,
 `dist/` ni `frontend/.env.local`.
 
+La guía completa para instalar y retirar el proyecto en una PC de prueba está en
+[`docs/INSTALLATION.md`](INSTALLATION.md).
+
 Para probar el CLI:
 
 ```powershell
@@ -71,6 +74,15 @@ temporal. Nunca coloques libros de clientes o reportes generados bajo control de
 `backend.app.channels.telegram.TelegramChannel` es un adaptador de transporte sin
 dependencias externas. Se prueba con dobles offline y solo debe conectarse a un caso de
 uso autorizado; no debe interpretar lenguaje natural ni ejecutar SQL directamente.
+`TelegramCommandGateway` añade comandos estructurados, confirmación de venta, expiración
+y rate limit por chat. `build_orchestrated_sale_executor` es el punto de integración con
+`AIOrchestrator`; el worker de polling todavía se inicia fuera de FastAPI.
+
+Para preparar una prueba de rol en una base local:
+
+~~~powershell
+uv run python -m backend.app.management correo@ejemplo.local MANAGER
+~~~
 
 ### Pruebas de autenticación
 

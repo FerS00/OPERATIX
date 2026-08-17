@@ -11,6 +11,15 @@ export type Sale = {
   created_by: string;
 };
 export type Inventory = { product_id: string; quantity: number };
+export type Customer = { id: string; name: string; email: string | null };
+export type Product = {
+  id: string;
+  sku: string;
+  name: string;
+  unit_price: string;
+  currency: string;
+  is_active: boolean;
+};
 export type StoredFile = {
   id: string;
   original_name: string;
@@ -71,6 +80,8 @@ export const api = {
     request<User>("/auth/register", { method: "POST", body: JSON.stringify({ email, password }) }),
   me: (token: string) => request<User>("/auth/me", {}, token),
   sales: (token: string) => request<Sale[]>("/sales", {}, token),
+  customers: (token: string) => request<Customer[]>("/customers", {}, token),
+  products: (token: string) => request<Product[]>("/products", {}, token),
   inventory: (token: string) => request<Inventory[]>("/inventory", {}, token),
   files: (token: string) => request<StoredFile[]>("/files", {}, token),
   summary: (token: string) => request<SalesSummary>("/reports/sales/summary", {}, token),

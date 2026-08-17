@@ -104,7 +104,12 @@ petición `fetch`, no tokens en la URL. CORS se configura mediante
 `OPERATIX_FRONTEND_ORIGINS`.
 
 `TelegramChannel` solo normaliza mensajes y envía texto mediante la Bot API. La conexión
-con herramientas, confirmación humana e idempotencia se mantiene fuera del transporte.
+con herramientas se realiza en `TelegramCommandGateway`: acepta comandos explícitos,
+crea una confirmación de corta duración, valida que el mismo chat la confirme y aplica un
+límite de solicitudes en memoria. Al confirmar, `build_orchestrated_sale_executor` llama
+al `AIOrchestrator` y a la tool registrada `create_sale`, por lo que Telegram no accede a
+SQLAlchemy ni puede saltarse permisos o idempotencia. El proceso que ejecute el long
+polling aún debe iniciarse de forma explícita; no se arranca como tarea de FastAPI.
 
 ## Estructura
 
@@ -128,7 +133,7 @@ OPERATIX/
 
 ## Siguientes incrementos
 
-1. Confirmación humana antes de operaciones sensibles o montos altos.
+1. Worker de Telegram, vinculación segura de chat a usuario y pruebas de navegador.
 2. Completar conversación multironda y conectar el adaptador LLM al orquestador.
 3. Completar importación confirmada de filas Excel hacia clientes/productos/ventas.
-4. Dashboard React y Telegram después de estabilizar la API.
+4. Preparar despliegue productivo solo después de medir la necesidad.

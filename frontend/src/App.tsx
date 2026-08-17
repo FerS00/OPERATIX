@@ -10,7 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { ApiError, api, downloadFile } from "./api";
-import type { AuditEntry, Inventory, Sale, SalesSummary, StoredFile, User } from "./api";
+import type { AuditEntry, Customer, Inventory, Product, Sale, SalesSummary, StoredFile, User } from "./api";
 
 const TOKEN_KEY = "operatix.access_token";
 
@@ -20,6 +20,8 @@ function App() {
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY));
   const [user, setUser] = useState<User | null>(null);
   const [sales, setSales] = useState<Sale[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [inventory, setInventory] = useState<Inventory[]>([]);
   const [files, setFiles] = useState<StoredFile[]>([]);
   const [summary, setSummary] = useState<SalesSummary | null>(null);
@@ -39,14 +41,18 @@ function App() {
       setLoading(true);
       setError("");
       try {
-        const [currentUser, currentSales, currentInventory, currentFiles] = await Promise.all([
+        const [currentUser, currentSales, currentCustomers, currentProducts, currentInventory, currentFiles] = await Promise.all([
           api.me(activeToken),
           api.sales(activeToken),
+          api.customers(activeToken),
+          api.products(activeToken),
           api.inventory(activeToken),
           api.files(activeToken),
         ]);
         setUser(currentUser);
         setSales(currentSales);
+        setCustomers(currentCustomers);
+        setProducts(currentProducts);
         setInventory(currentInventory);
         setFiles(currentFiles);
         if (currentUser.roles.includes("ADMIN")) {
@@ -107,6 +113,7 @@ function App() {
           <nav className="space-y-1 text-sm">
             <a className="nav-item nav-active" href="#resumen">Resumen</a>
             <a className="nav-item" href="#ventas">Ventas</a>
+            <a className="nav-item" href="#maestros">Clientes y productos</a>
             <a className="nav-item" href="#inventario">Inventario</a>
             <a className="nav-item" href="#archivos">Archivos</a>
             <a className="nav-item" href="#reportes">Reportes</a>
@@ -133,6 +140,11 @@ function App() {
           {error && <div className="alert-error">{error}</div>}
           {notice && <div className="alert-success">{notice}</div>}
           <Kpis sales={sales} inventory={inventory} summary={summary} />
+
+          <div id="maestros" className="grid gap-6 xl:grid-cols-2">
+            <MasterDataCard title="Clientes" items={customers.map((customer) => ({ id: customer.id, title: customer.name, detail: customer.email ?? "Sin correo" }))} empty="No hay clientes registrados." />
+            <MasterDataCard title="Productos" items={products.map((product) => ({ id: product.id, title: product.name, detail: `${product.sku} · ${product.unit_price} ${product.currency}` }))} empty="No hay productos registrados." />
+          </div>
 
           <div id="resumen" className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
             <SalesChart sales={sales} summary={summary} />
@@ -257,6 +269,10 @@ function SalesChart({ sales, summary }: { sales: Sale[]; summary: SalesSummary |
 
 function InventoryCard({ inventory }: { inventory: Inventory[] }) {
   return <div id="inventario" className="card"><SectionHeading eyebrow="Existencias" title="Inventario" action={`${inventory.length} productos`} /><div className="mt-5 space-y-3">{inventory.slice(0, 6).map((item) => <div className="flex items-center justify-between border-b border-slate-100 pb-3 text-sm" key={item.product_id}><span className="truncate pr-3 font-medium text-slate-700">{item.product_id.slice(0, 12)}…</span><span className={item.quantity < 5 ? "badge-warning" : "badge-success"}>{item.quantity} unidades</span></div>)}{!inventory.length && <EmptyState message="No hay inventario registrado." />}</div></div>;
+}
+
+function MasterDataCard({ title, items, empty }: { title: string; items: { id: string; title: string; detail: string }[]; empty: string }) {
+  return <div className="card"><SectionHeading eyebrow="Datos maestros" title={title} action={`${items.length} registros`} /><div className="mt-5 space-y-3">{items.slice(0, 6).map((item) => <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 text-sm" key={item.id}><span className="truncate font-medium text-slate-700">{item.title}</span><span className="truncate text-right text-xs text-slate-400">{item.detail}</span></div>)}{!items.length && <EmptyState message={empty} />}</div></div>;
 }
 
 function SalesTable({ sales }: { sales: Sale[] }) {
