@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session
 
 from backend.app.core.config import get_settings
 
@@ -27,3 +28,9 @@ def reset_engine() -> None:
     if _engine is not None:
         _engine.dispose()
         _engine = None
+
+
+def get_session():
+    """Yield one SQLAlchemy session for a request and always close it."""
+    with Session(get_engine()) as session:
+        yield session

@@ -17,6 +17,8 @@ class Settings:
     app_name: str
     app_env: str
     database_url: str
+    jwt_secret: str = ""
+    jwt_access_token_minutes: int = 30
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -38,10 +40,20 @@ class Settings:
                 f"@{host}:{port}/{quote_plus(database)}"
             )
 
+        raw_expiration = os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30").strip()
+        try:
+            expiration_minutes = int(raw_expiration)
+        except ValueError as error:
+            raise ValueError("JWT_ACCESS_TOKEN_EXPIRE_MINUTES debe ser un entero.") from error
+        if not 5 <= expiration_minutes <= 1_440:
+            raise ValueError("JWT_ACCESS_TOKEN_EXPIRE_MINUTES debe estar entre 5 y 1440.")
+
         return cls(
             app_name=os.getenv("APP_NAME", "OPERATIX API").strip(),
             app_env=os.getenv("APP_ENV", "development").strip(),
             database_url=database_url,
+            jwt_secret=os.getenv("JWT_SECRET", "").strip(),
+            jwt_access_token_minutes=expiration_minutes,
         )
 
 

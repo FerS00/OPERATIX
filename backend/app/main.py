@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
+from backend.app.api.routes.auth import router as auth_router
 from backend.app.api.routes.health import router as health_router
+from backend.app.api.routes.security import router as security_router
 from backend.app.core.config import get_settings
 
 
@@ -13,6 +15,8 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(title=settings.app_name, version="0.1.0")
     application.include_router(health_router)
+    application.include_router(auth_router)
+    application.include_router(security_router)
     return application
 
 

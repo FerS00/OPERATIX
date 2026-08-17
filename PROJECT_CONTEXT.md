@@ -6,7 +6,7 @@
 ## Estado actual
 
 - Fecha de referencia: 2026-08-16.
-- Fase activa: Fase 2 — seguridad (pendiente de iniciar).
+- Fase activa: Fase 3 — dominio y orquestador (pendiente de iniciar).
 - Rama de trabajo: `feat/operatix-mvp-main`, basada en `main`.
 - Rama remota original preservada: `feat/operatix-mvp`.
 - Respaldo local: `backup/operatix-mvp-root-0f6aece`.
@@ -56,6 +56,10 @@ seguir siendo la base transaccional principal del producto final.
   estructura inicial de frontend/storage y endpoint de salud.
 - Dependencias de la Fase 1 bloqueadas en `uv.lock`.
 - Verificaciones de Fase 1: 9 pruebas, Ruff, formato, Compose y Alembic offline.
+- Fase 2 implementada: usuarios, roles, permisos, hash Argon2, JWT de corta duración y
+  auditoría.
+- El registro público solo asigna `USER`; las rutas de prueba RBAC cubren `READ` y `ADMIN`.
+- Verificaciones de Fase 2: 11 pruebas, Ruff y formato; cobertura total aproximada del 66%.
 
 ## Trabajo pendiente
 
@@ -74,11 +78,13 @@ seguir siendo la base transaccional principal del producto final.
 - Estructuras `frontend/` y `storage/` creadas sin instalar herramientas frontend todavía.
 - No se levantó ningún contenedor ni servicio administrado; costo de esta fase: cero.
 
-### Fase 2 — Seguridad
+### Fase 2 — Seguridad (completada localmente)
 
-- Usuarios, roles, permisos, JWT, hash de contraseñas y auditoría.
-- Validación de archivos y entradas externas.
-- Dependencias de autorización reutilizables en la API y las tools.
+- Usuarios, roles, permisos, JWT, hash Argon2 y auditoría en `backend/app/security`.
+- Validación de email y contraseña mediante Pydantic.
+- Dependencias de autorización reutilizables en la API y futuras tools.
+- Migración `0002_security` preparada para MySQL.
+- No se añadieron servicios externos ni costos de infraestructura.
 
 ### Fase 3 — Dominio y orquestador
 

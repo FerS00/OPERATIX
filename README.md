@@ -123,6 +123,24 @@ MySQL Community y el contenedor local no requieren un servicio administrado. El 
 de los proveedores LLM, el hosting y un MySQL administrado sí pueden generar costos y no
 se incorporarán sin informarlo.
 
+## Autenticación y permisos iniciales
+
+La Fase 2 incorpora usuarios, roles, permisos, hash Argon2, JWT y auditoría. El registro
+siempre crea un usuario `USER`; los roles privilegiados no se aceptan desde el cliente.
+
+Endpoints disponibles:
+
+```text
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+GET  /api/v1/auth/me
+GET  /api/v1/security/read-check
+GET  /api/v1/security/admin-check
+```
+
+Configura `JWT_SECRET` con al menos 32 caracteres aleatorios antes de usar login. Las
+contraseñas, tokens y secretos nunca se escriben en `audit_logs`.
+
 ## Google Sheets
 
 1. Crea una cuenta de servicio en Google Cloud y habilita Google Sheets API.
@@ -180,6 +198,6 @@ Consulta [la arquitectura](docs/ARCHITECTURE.md) y
 - La interfaz de clave temporal es solo para ejecución local de un usuario.
 - No existe todavía aprobación humana para montos altos.
 - Excel y Google Sheets no son adecuados para alta concurrencia.
-- No hay webhook público, autenticación de usuarios finales ni despliegue productivo.
+- No hay webhook público, Telegram ni despliegue productivo.
 - No se añadirá una cola o un servicio administrado hasta que las métricas reales lo
   justifiquen.

@@ -38,6 +38,14 @@ acoplar todavía el dominio de ventas a la base de datos. Docker Compose levanta
 Community local y la API expone `/api/v1/health` y `/api/v1/health/ready`. Las tablas de
 negocio se añadirán en la fase de dominio, con migraciones versionadas.
 
+## Fase 2 de seguridad
+
+La API incorpora usuarios, roles, permisos, JWT de corta duración y auditoría. El token
+solo contiene el identificador del usuario; cada request vuelve a cargar el usuario y sus
+roles desde la base de datos. El endpoint de registro solo asigna `USER`, y las rutas
+protegidas usan dependencias de autorización reutilizables. Las operaciones de negocio y
+las confirmaciones destructivas se implementarán junto con las tools en la siguiente fase.
+
 ## Estructura
 
 ```text

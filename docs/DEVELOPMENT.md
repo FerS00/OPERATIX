@@ -38,6 +38,12 @@ uv run alembic upgrade head
 La primera migración solo establece el historial. Las tablas de negocio se añadirán junto
 con los modelos de la siguiente fase.
 
+### Pruebas de autenticación
+
+Las pruebas de auth usan SQLite temporal y no requieren MySQL ni servicios externos. Antes
+de entregar cambios ejecuta `uv run python -m pytest`; las contraseñas de prueba son datos
+efímeros y nunca deben copiarse a `.env.local`.
+
 ## Flujo de una solicitud
 
 1. Dash o CLI construye el proveedor y el repositorio seleccionados.

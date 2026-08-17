@@ -62,6 +62,16 @@ MySQL Community mediante `docker-compose.yml` sin contratar una base administrad
 `DATABASE_URL` y las contraseñas no deben aparecer en logs, capturas ni commits. Las
 migraciones se ejecutan con `uv run alembic upgrade head` después de levantar MySQL.
 
+## Autenticación
+
+| Variable | Valor predeterminado | Uso |
+|---|---|---|
+| `JWT_SECRET` | — | Secreto de firma; mínimo 32 caracteres fuera de desarrollo |
+| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | `30` | Duración del access token |
+
+Genera un secreto local con un gestor de contraseñas o `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
+No lo pegues en commits, issues ni logs.
+
 ## Persistencia Google Sheets
 
 | Variable | Uso |
