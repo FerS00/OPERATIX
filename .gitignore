@@ -33,3 +33,18 @@ storage/exports/*
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Additional secret material (portfolio hygiene)
+.env.*
+!.env.example
+secrets/
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Build output and dependencies
+node_modules/
+dist/
+build/
+*.log
